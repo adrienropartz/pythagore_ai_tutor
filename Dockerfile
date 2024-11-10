@@ -1,25 +1,7 @@
-# Use an official Node.js runtime as the base image
-FROM node:18 as frontend
-
-# Set working directory for frontend
-WORKDIR /app
-
-# Copy package files
-COPY frontend/package*.json ./
-
-# Install frontend dependencies
-RUN npm ci
-
-# Copy frontend source
-COPY frontend/ ./
-
-# Build frontend
-RUN npm run build
-
-# Use Python image for the backend
+# Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
 # Create necessary directories
@@ -36,15 +18,8 @@ RUN python -m pip install --upgrade pip && \
 COPY backend/ ./backend/
 COPY math_docs/. ./math_docs/
 
-# Copy built frontend from previous stage
-COPY --from=frontend /app/.next ./frontend/.next
-
-# Set environment variables
-ENV PORT=8000
-ENV PYTHONPATH=/app/backend
-
-# Expose the port the app runs on
-EXPOSE 8000
+# Set the working directory to where your main application is
+WORKDIR /app/backend
 
 # Command to run the application
-CMD ["sh", "-c", "cd backend && uvicorn api:app --host 0.0.0.0 --port $PORT"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

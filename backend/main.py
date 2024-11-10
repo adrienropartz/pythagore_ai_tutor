@@ -42,12 +42,17 @@ class TutorConfig:
 class PythagoreTutor:
     def __init__(
         self,
-        docs_path: str = "/app/math_docs",
-        db_path: str = "math_tutor_db",
-        embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+        docs_path: str = None,
+        db_path: str = None,
+        embedding_model: str = None
     ):
         # Load environment variables
         load_dotenv()
+        
+        # Use environment variables with fallbacks
+        self.docs_path = docs_path or os.getenv('DOCS_PATH', '/app/math_docs')
+        self.db_path = db_path or os.getenv('DB_PATH', 'math_tutor_db')
+        self.embedding_model = embedding_model or os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
 
         # Get API key with error handling
         api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -67,21 +72,21 @@ class PythagoreTutor:
         )
 
         # Initialize embeddings
-        self.embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
+        self.embeddings = HuggingFaceEmbeddings(model_name=self.embedding_model)
 
         # Initialize or load vector store
-        if os.path.exists(db_path):
+        if os.path.exists(self.db_path):
             self.vectorstore = Chroma(
-                persist_directory=db_path,
+                persist_directory=self.db_path,
                 embedding_function=self.embeddings
             )
         else:
             # Load documents and create vector store
-            documents = self._load_documents(docs_path)
+            documents = self._load_documents(self.docs_path)
             self.vectorstore = Chroma.from_documents(
                 documents=documents,
                 embedding=self.embeddings,
-                persist_directory=db_path
+                persist_directory=self.db_path
             )
             self.vectorstore.persist()
 

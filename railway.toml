@@ -1,6 +1,11 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd backend && pip install -r requirements.txt"
+buildCommand = """
+python -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r backend/requirements.txt
+"""
 
 [deploy]
 startCommand = "cd backend && uvicorn api:app --host 0.0.0.0 --port $PORT"
@@ -11,7 +16,6 @@ restartPolicyMaxRetries = 3
 
 [env]
 PYTHON_VERSION = "3.10"
-ENVIRONMENT = "production"
 
 [[services]]
 name = "pythagore-backend"
@@ -21,19 +25,3 @@ protocol = "http"
 [[services.ports]]
 handlers = ["http"]
 port = 80
-
-[services.environment]
-LOG_LEVEL = "INFO"
-
-[deploy.lifecycle]
-preStartCommand = "cd backend && python -m nltk.downloader punkt"
-postStartCommand = "echo 'API is ready'"
-
-[deploy.scaling]
-minInstances = 1
-maxInstances = 2
-
-[deploy.healthCheck]
-interval = "30s"
-timeout = "10s"
-maxRetries = 3

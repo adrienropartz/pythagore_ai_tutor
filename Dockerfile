@@ -4,9 +4,6 @@ FROM python:3.10-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Create necessary directories
-RUN mkdir -p math_docs math_tutor_db
-
 # Copy Python requirements
 COPY backend/requirements.txt ./backend/
 
@@ -21,5 +18,8 @@ COPY math_docs/. ./math_docs/
 # Set the working directory to where your main application is
 WORKDIR /app/backend
 
+# Make sure uvicorn is in PATH
+ENV PATH="/usr/local/bin:${PATH}"
+
 # Command to run the application
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]

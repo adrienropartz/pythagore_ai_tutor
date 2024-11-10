@@ -42,7 +42,7 @@ class TutorConfig:
 class PythagoreTutor:
     def __init__(
         self,
-        docs_path: str = "math_docs",
+        docs_path: str = "/app/math_docs",
         db_path: str = "math_tutor_db",
         embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     ):
@@ -148,6 +148,10 @@ Pythagore:"""
 
     def _load_documents(self, docs_path: str) -> List[Document]:
         """Load documents from the specified path."""
+        print(f"Attempting to load documents from: {os.path.abspath(docs_path)}")
+        print(f"Directory exists: {os.path.exists(docs_path)}")
+        print(f"Directory contents: {os.listdir(docs_path) if os.path.exists(docs_path) else 'N/A'}")
+        
         if not os.path.exists(docs_path):
             raise ValueError(f"Documents path {docs_path} does not exist")
 
@@ -157,13 +161,16 @@ Pythagore:"""
             loader_cls=PyPDFLoader
         )
         documents = loader.load()
+        print(f"Loaded {len(documents)} documents")
 
         # Split documents into chunks
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200
         )
-        return text_splitter.split_documents(documents)
+        split_docs = text_splitter.split_documents(documents)
+        print(f"Split into {len(split_docs)} chunks")
+        return split_docs
 
     async def process_message(
         self,

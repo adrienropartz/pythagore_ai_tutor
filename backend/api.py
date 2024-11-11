@@ -8,11 +8,18 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Set up logging properly
-logging.basicConfig(level=logging.INFO)
+# Set up logging properly for production
+logging.basicConfig(
+    level=os.getenv('LOG_LEVEL', 'INFO'),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="Pythagore Math Tutor",
+    description="AI-powered math tutoring API",
+    version="1.0.0"
+)
 
 # Add CORS middleware with environment variables
 allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
@@ -24,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize tutor lazily
+# Initialize tutor lazily to save memory
 tutor = None
 
 class TutorRequest(BaseModel):
@@ -33,7 +40,14 @@ class TutorRequest(BaseModel):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    """Health check endpoint for Digital Ocean"""
+    try:
+        from .health import check_environment
+        check_environment()
+        return {"status": "healthy"}
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        raise HTTPException(status_code=503, detail=str(e))
 
 @app.post("/api/tutor")
 async def chat_with_tutor(request: TutorRequest):

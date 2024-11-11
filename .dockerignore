@@ -1,14 +1,17 @@
-node_modules
-npm-debug.log
-Dockerfile
-.dockerignore
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+env/
+venv/
+.env
+*.log
 .git
 .gitignore
 README.md
-.next
-.env
-venv
-__pycache__
-*.pyc
 frontend/
-# Don't exclude math_docs anymore
+node_modules/
+npm-debug.log
+Dockerfile
+.dockerignore

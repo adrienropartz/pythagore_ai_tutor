@@ -1,28 +1,29 @@
-# Use an official Python runtime as a parent image
+# Use Python slim image for smaller size
 FROM python:3.10-slim
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy Python requirements
+# Install system dependencies and clean up in one layer
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages in layers for better caching
 COPY backend/requirements.txt ./backend/
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
-# Install Python dependencies
-RUN python -m pip install --upgrade pip && \
-    pip install -r backend/requirements.txt
-
-# Copy backend source and math docs
+# Copy application code
 COPY backend/ ./backend/
-COPY math_docs/. ./math_docs/
+COPY math_docs/ ./math_docs/
 
-# Keep WORKDIR as /app (not /app/backend)
-# WORKDIR /app/backend  <- Remove or comment this line
+# Set environment variables
+ENV PYTHONPATH="/app"
+ENV PYTHONUNBUFFERED=1
 
-# Set PYTHONPATH to include /app
-ENV PYTHONPATH="/app:${PYTHONPATH}"
+# Health check for Digital Ocean
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl --fail http://localhost:8000/health || exit 1
 
-# Make sure uvicorn is in PATH
-ENV PATH="/usr/local/bin:${PATH}"
-
-# Command to run the application
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

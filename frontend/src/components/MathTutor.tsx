@@ -16,6 +16,8 @@ interface TutorConfig {
   language: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://your-railway-app-url.railway.app';
+
 const MathTutor: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -70,7 +72,7 @@ const MathTutor: React.FC = () => {
         language: "English"
       };
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tutor`, {
+      const response = await fetch(`${API_URL}/api/tutor`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

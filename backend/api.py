@@ -33,7 +33,7 @@ class TutorRequest(BaseModel):
 async def root():
     return {"message": "Welcome to Pythagore Math Tutor API"}
 
-@app.get("/api/health")
+@app.get("/health")
 async def health_check():
     return {"status": "healthy"}
 

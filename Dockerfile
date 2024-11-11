@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Create necessary directories
+# Create necessary directories first
 RUN mkdir -p /app/db /app/math_docs
 
 # Copy and install requirements
@@ -19,9 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY backend ./backend
 
-# Copy optional directories if they exist
-COPY math_docs/. ./math_docs/ 2>/dev/null || true
-COPY db/. ./db/ 2>/dev/null || true
+# Copy empty directories (without trying to handle missing files)
+COPY math_docs math_docs/
+COPY db db/
 
 # Set environment variables
 ENV PYTHONPATH=/app

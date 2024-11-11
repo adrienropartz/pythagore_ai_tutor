@@ -12,5 +12,5 @@ restartPolicyMaxRetries = 3
 [env]
 PYTHON_VERSION = "3.10"
 NIXPACKS_PYTHON_VERSION = "3.10"
-PYTHONPATH = "/app"
+PYTHONPATH = "/app/backend"
 PORT = "8000"

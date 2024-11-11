@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
-from .main import PythagoreTutor
+from main import PythagoreTutor
 
 # Set up logging properly
 logging.basicConfig(level=logging.INFO)

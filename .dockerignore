@@ -11,3 +11,4 @@ venv
 __pycache__
 *.pyc
 frontend/
+# Don't exclude math_docs anymore

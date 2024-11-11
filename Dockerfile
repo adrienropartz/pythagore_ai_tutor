@@ -15,8 +15,11 @@ RUN python -m pip install --upgrade pip && \
 COPY backend/ ./backend/
 COPY math_docs/. ./math_docs/
 
-# Set the working directory to where your main application is
-WORKDIR /app/backend
+# Keep WORKDIR as /app (not /app/backend)
+# WORKDIR /app/backend  <- Remove or comment this line
+
+# Set PYTHONPATH to include /app
+ENV PYTHONPATH="/app:${PYTHONPATH}"
 
 # Make sure uvicorn is in PATH
 ENV PATH="/usr/local/bin:${PATH}"

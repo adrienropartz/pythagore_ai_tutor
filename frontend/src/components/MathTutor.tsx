@@ -33,6 +33,20 @@ const MathTutor: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const formatTutorResponse = (response: string): string => {
+    // Remove roleplay elements (text between asterisks)
+    let formatted = response.replace(/\*[^*]*\*/g, '');
+    
+    // Remove any leading/trailing whitespace
+    formatted = formatted.trim();
+    
+    // Split into paragraphs and remove empty ones
+    const paragraphs = formatted.split('\n').filter(p => p.trim());
+    
+    // Join paragraphs with proper spacing
+    return paragraphs.join('\n\n');
+  };
+
   const handleSend = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
@@ -63,22 +77,18 @@ const MathTutor: React.FC = () => {
         },
         body: JSON.stringify({
           message: inputMessage,
-          config,
-          chat_history: messages
-            .map(m => `${m.role}: ${m.content}`)
-            .join('\n')
+          config: config
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      
       setMessages(prev => [...prev, {
         role: 'tutor',
-        content: data.response
+        content: formatTutorResponse(data.response)
       }]);
     } catch (error) {
       console.error('Error:', error);
@@ -99,19 +109,19 @@ const MathTutor: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto h-[600px] bg-white rounded-lg shadow-lg">
-      {/* Header with level selection */}
+    <div className="flex flex-col h-screen max-w-3xl mx-auto">
+      {/* Header */}
       <div className="p-4 border-b">
-        <h1 className="text-2xl font-bold text-center mb-4">Pythagore Math Tutor</h1>
-        <div className="flex justify-center gap-2">
+        <h1 className="text-2xl font-bold text-center">Pythagore Math Tutor</h1>
+        <div className="flex justify-center gap-2 mt-4">
           {levels.map((level) => (
             <button
               key={level}
               onClick={() => setCurrentLevel(level)}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-4 py-2 rounded-full ${
                 currentLevel === level
                   ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 hover:bg-gray-200'
+                  : 'bg-gray-100'
               }`}
             >
               {level}
@@ -120,7 +130,7 @@ const MathTutor: React.FC = () => {
         </div>
       </div>
 
-      {/* Messages area */}
+      {/* Messages area with improved formatting */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
           <div
@@ -136,7 +146,9 @@ const MathTutor: React.FC = () => {
                   : 'bg-gray-100'
               }`}
             >
-              {message.content}
+              <pre className="whitespace-pre-wrap font-sans">
+                {message.content}
+              </pre>
             </div>
           </div>
         ))}

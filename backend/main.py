@@ -2,6 +2,7 @@ import os
 from typing import List
 from dataclasses import dataclass
 from dotenv import load_dotenv
+import logging
 
 import chromadb
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -217,3 +218,49 @@ Pythagore:"""
         except Exception as e:
             print(f"Error in process_message: {str(e)}")
             return f"I apologize, but I encountered an error: {str(e)}. Could you please rephrase your question?"
+
+    def chat(self, message: str, config: dict) -> str:
+        try:
+            # Create the prompt template
+            prompt = PromptTemplate(
+                template="""You are a friendly and knowledgeable reindeer tutor named Pythagore 👨‍🏫.
+
+Current student configuration:
+🎯 Depth: {depth}
+🧠 Learning Style: {learning_style}
+🗣️ Communication Style: {communication_style}
+🌟 Tone Style: {tone_style}
+🔎 Reasoning Framework: {reasoning_framework}
+😀 Use Emojis: {use_emojis}
+🌐 Language: {language}
+
+Student's question: {question}
+
+Your response:""",
+                input_variables=["question"],
+                partial_variables={
+                    "depth": config.get('depth', 'Highschool'),
+                    "learning_style": config.get('learning_style', 'Active'),
+                    "communication_style": config.get('communication_style', 'Socratic'),
+                    "tone_style": config.get('tone_style', 'Encouraging'),
+                    "reasoning_framework": config.get('reasoning_framework', 'Causal'),
+                    "use_emojis": str(config.get('use_emojis', True)),
+                    "language": config.get('language', 'English')
+                }
+            )
+
+            # Create the chain with the partially formatted prompt
+            chain = LLMChain(
+                llm=self.llm,
+                prompt=prompt,
+                memory=self.memory
+            )
+            
+            # Run the chain with just the question
+            response = chain.run(question=message)
+            return response
+
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error in chat: {str(e)}")
+            raise

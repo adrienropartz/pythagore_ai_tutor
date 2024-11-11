@@ -1,11 +1,12 @@
 [build]
-builder = "nixpacks"
-buildCommand = "pip install -r backend/requirements.txt && pip install -r backend/requirements-ml.txt"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "uvicorn backend.api:app --host 0.0.0.0 --port $PORT"
+startCommand = "uvicorn backend.api:app --host 0.0.0.0 --port 8000"
 healthcheckPath = "/health"
 healthcheckTimeout = 10
+restartPolicyType = "on-failure"
 
 [env]
 PYTHON_VERSION = "3.10"

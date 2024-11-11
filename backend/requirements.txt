@@ -3,13 +3,10 @@ uvicorn[standard]>=0.24.0
 python-multipart>=0.0.6
 python-dotenv>=1.0.0
 pydantic>=2.5.2
+anthropic>=0.39.0
+requests>=2.31.0
 langchain>=0.1.0
 langchain-anthropic>=0.0.1
-langchain-community>=0.0.10
 langchain-core>=0.1.7
-langchain-huggingface>=0.0.1
 chromadb>=0.4.15
 sentence-transformers>=2.2.2
-numpy>=1.24.3
-requests>=2.31.0
-pypdf==4.0.1

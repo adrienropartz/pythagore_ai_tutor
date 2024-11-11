@@ -1,5 +1,5 @@
 # Use Python slim image
-FROM python:3.10-slim as builder
+FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
@@ -10,18 +10,18 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python packages in stages
-COPY backend/requirements-base.txt backend/requirements-ml.txt ./backend/
+# Create and activate a virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Install base requirements first
-RUN pip install --no-cache-dir -r backend/requirements-base.txt
+# Copy and install requirements
+COPY backend/requirements.txt .
+COPY backend/requirements-ml.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-ml.txt
 
-# Install ML requirements with increased timeout
-RUN pip install --no-cache-dir --timeout 300 -r backend/requirements-ml.txt
-
-# Copy application code
-COPY backend/ ./backend/
-COPY math_docs/ ./math_docs/
+# Copy the rest of your application code
+COPY . .
 
 # Set environment variables
 ENV PYTHONPATH="/app"

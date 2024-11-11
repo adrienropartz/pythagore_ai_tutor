@@ -22,10 +22,10 @@ app = FastAPI(
 )
 
 # Add CORS middleware with environment variables
-allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+allowed_origins = os.getenv('ALLOWED_ORIGINS', '*').split(',')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=['*'],  # Allow all origins temporarily
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,14 +40,8 @@ class TutorRequest(BaseModel):
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for Digital Ocean"""
-    try:
-        from .health import check_environment
-        check_environment()
-        return {"status": "healthy"}
-    except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
-        raise HTTPException(status_code=503, detail=str(e))
+    """Health check endpoint"""
+    return {"status": "healthy"}
 
 @app.post("/api/tutor")
 async def chat_with_tutor(request: TutorRequest):

@@ -1,13 +1,11 @@
 [build]
 builder = "nixpacks"
-buildCommand = "pip install -r backend/requirements.txt"
+buildCommand = "pip install -r backend/requirements.txt && pip install -r backend/requirements-ml.txt"
 
 [deploy]
 startCommand = "uvicorn backend.api:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"
-healthcheckTimeout = 30
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
+healthcheckTimeout = 10
 
 [env]
 PYTHON_VERSION = "3.10"

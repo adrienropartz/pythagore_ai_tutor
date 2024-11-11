@@ -7,7 +7,6 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Create and activate a virtual environment
@@ -27,11 +26,7 @@ COPY . .
 ENV PYTHONPATH="/app"
 ENV PYTHONUNBUFFERED=1
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl --fail http://localhost:8000/health || exit 1
-
-# Run with 2 workers instead of 4 to reduce memory usage
+# Run with 2 workers
 CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
 
 #test

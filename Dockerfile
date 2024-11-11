@@ -18,8 +18,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY backend ./backend
-COPY math_docs ./math_docs || true
-COPY db ./db || true
+
+# Copy optional directories if they exist
+COPY math_docs/. ./math_docs/ 2>/dev/null || true
+COPY db/. ./db/ 2>/dev/null || true
 
 # Set environment variables
 ENV PYTHONPATH=/app

@@ -14,7 +14,7 @@ Pythagore is an AI Mathematics tutor that aims to propose a new personalized lea
 - **Concept Dependencies**: Mapping mathematical concepts and their relationships
 - **Adaptive Learning Paths**: Dynamic adjustment of content based on student's knowledge state
 
-### 🧠 Intelligent Knowledge Mapping
+### 🧠 Knowledge Mapping
 - Dynamic knowledge graph that maps student understanding
 - Real-time adaptation to student's learning pace and style
 - Identification of knowledge gaps and misconceptions

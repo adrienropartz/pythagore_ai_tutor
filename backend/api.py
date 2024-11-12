@@ -59,5 +59,3 @@ async def chat_with_tutor(request: TutorRequest):
     except Exception as e:
         logger.error(f"Error processing request: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
-# test

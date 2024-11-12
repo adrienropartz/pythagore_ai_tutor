@@ -130,7 +130,10 @@ Response Guidelines:
 8. End with one thought-provoking question
 9. Use appropriate mathematical notation
 10. Encourage mathematical reasoning
-11. Use LaTeX for mathematical notation with proper spacing and formatting
+11. Use LaTeX for mathematical notation with proper spacing and formatting:
+    - Basic fraction: $\\frac{{n}}{{d}}$
+    - Mixed number: $1\\frac{{1}}{{2}}$
+    - Complex fraction: $\\frac{{\\frac{{1}}{{2}}}}{{\\frac{{3}}{{4}}}}$
 12. Add space between LaTex and text
 13. When asking a question, wait for student response
 14. DO NOT provide the answer when asking a question
@@ -224,45 +227,37 @@ Pythagore:"""
 
     async def chat(self, message: str, config: dict) -> str:
         try:
-            # Create the prompt template
-            prompt = PromptTemplate(
-                template="""You are a friendly and knowledgeable reindeer tutor named Pythagore 👨‍🏫.
-
-Current student configuration:
-🎯 Depth: {depth}
-🧠 Learning Style: {learning_style}
-🗣️ Communication Style: {communication_style}
-🌟 Tone Style: {tone_style}
-🔎 Reasoning Framework: {reasoning_framework}
-😀 Use Emojis: {use_emojis}
-🌐 Language: {language}
-
-Student's question: {question}
-
-Your response:""",
-                input_variables=["question"],
-                partial_variables={
-                    "depth": config.get('depth', 'Highschool'),
-                    "learning_style": config.get('learning_style', 'Active'),
-                    "communication_style": config.get('communication_style', 'Socratic'),
-                    "tone_style": config.get('tone_style', 'Encouraging'),
-                    "reasoning_framework": config.get('reasoning_framework', 'Causal'),
-                    "use_emojis": str(config.get('use_emojis', True)),
-                    "language": config.get('language', 'English')
-                }
-            )
-
-            # Create the chain with the partially formatted prompt
-            chain = LLMChain(
-                llm=self.llm,
-                prompt=prompt,
-                memory=self.memory
+            logger.info("Starting chat processing...")
+            
+            # Convert dict config to TutorConfig
+            tutor_config = TutorConfig(
+                depth=config.get('depth', 'Highschool'),
+                learning_style=config.get('learning_style', 'Active'),
+                communication_style=config.get('communication_style', 'Socratic'),
+                tone_style=config.get('tone_style', 'Encouraging'),
+                reasoning_framework=config.get('reasoning_framework', 'Causal'),
+                use_emojis=config.get('use_emojis', True),
+                language=config.get('language', 'English')
             )
             
-            # Run the chain with just the question using ainvoke
-            response = await chain.ainvoke({"question": message})
-            return response["text"]
-
+            # Get chat history from memory
+            chat_history = self.memory.load_memory_variables({}).get("chat_history", "")
+            
+            # Use process_message which uses our structured prompt
+            response = await self.process_message(
+                message=message,
+                config=tutor_config,
+                chat_history=chat_history
+            )
+            
+            # Save the interaction to memory
+            self.memory.save_context(
+                {"input": message},
+                {"output": response}
+            )
+            
+            return response
+            
         except Exception as e:
-            logger.error(f"Error in chat: {str(e)}")
+            logger.error(f"Error in chat method: {str(e)}", exc_info=True)
             raise

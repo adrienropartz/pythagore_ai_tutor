@@ -16,6 +16,9 @@ from langchain.chains import LLMChain
 from langchain_core.documents import Document
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
+# Setup logger
+logger = logging.getLogger(__name__)
+
 # First, define TutorConfig
 @dataclass
 class TutorConfig:
@@ -219,7 +222,7 @@ Pythagore:"""
             print(f"Error in process_message: {str(e)}")
             return f"I apologize, but I encountered an error: {str(e)}. Could you please rephrase your question?"
 
-    def chat(self, message: str, config: dict) -> str:
+    async def chat(self, message: str, config: dict) -> str:
         try:
             # Create the prompt template
             prompt = PromptTemplate(
@@ -256,11 +259,10 @@ Your response:""",
                 memory=self.memory
             )
             
-            # Run the chain with just the question
-            response = chain.run(question=message)
-            return response
+            # Run the chain with just the question using ainvoke
+            response = await chain.ainvoke({"question": message})
+            return response["text"]
 
         except Exception as e:
-            logger = logging.getLogger(__name__)
             logger.error(f"Error in chat: {str(e)}")
             raise

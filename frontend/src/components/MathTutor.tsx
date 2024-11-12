@@ -16,7 +16,7 @@ interface TutorConfig {
   language: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://your-railway-app-url.railway.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const MathTutor: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -92,8 +92,9 @@ const MathTutor: React.FC = () => {
         role: 'tutor',
         content: formatTutorResponse(data.response)
       }]);
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error:', errorMessage);
       setMessages(prev => [...prev, {
         role: 'tutor',
         content: "I apologize, but I encountered an error. Could you please try again?"

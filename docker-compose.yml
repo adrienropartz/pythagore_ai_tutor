@@ -4,11 +4,8 @@ services:
     build: .
     ports:
       - "8000:8000"
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - ALLOWED_ORIGINS=http://localhost:3000
-      - DB_PATH=/app/math_tutor_db
-      - DOCS_PATH=/app/math_docs
+    env_file:
+      - backend/.env
     volumes:
       - ./math_docs:/app/math_docs
     healthcheck:

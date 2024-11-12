@@ -3,6 +3,9 @@
 ## 🎯 Vision
 Pythagore is an AI Mathematics tutor that aims to propose a new personalized learning experiencethrough a combination of Large Language Models and Knowledge Graphs. I'm building an AI tutor that truly understands each student's knowledge level, adapts its teaching approach in real-time, and provides personalized guidance through mathematics education.
 
+## 🗺️ System Architecture
+![Pythagore Architecture](assets/Architecture Flow Pythagore.png)
+
 ## 🧠 Core Architecture
 
 ### 🔄 Reasoning Layer

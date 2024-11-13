@@ -7,6 +7,7 @@ WORKDIR /app
 # Install only required system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories
@@ -20,16 +21,21 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ./backend
 COPY math_docs math_docs/
 COPY db db/
+COPY start.sh .
+RUN chmod +x start.sh
 
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PORT=8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+# Expose the port
+EXPOSE 8000
+
+# Health check with appropriate timing
+HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 \
     CMD curl --fail http://localhost:8000/health || exit 1
 
 # Run the application
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./start.sh"]
 
 #test

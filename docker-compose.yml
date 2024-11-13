@@ -10,6 +10,7 @@ services:
       - ./math_docs:/app/math_docs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3 
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s 

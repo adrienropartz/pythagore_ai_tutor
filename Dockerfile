@@ -4,7 +4,7 @@ FROM python:3.10-slim
 # Set working directory
 WORKDIR /app
 
-# Install only required system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
@@ -31,9 +31,9 @@ ENV PORT=8000
 # Expose the port
 EXPOSE 8000
 
-# Health check with appropriate timing
-HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 \
-    CMD curl --fail http://localhost:8000/health || exit 1
+# Increase healthcheck intervals and timeout
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Run the application
 CMD ["./start.sh"]

@@ -45,4 +45,4 @@ Pythagore is an AI Mathematics tutor that aims to propose a new personalized lea
 - **Voice Generation**: ElevenLabs API
 - **Deployment**: Docker, Railway
 
---
+----

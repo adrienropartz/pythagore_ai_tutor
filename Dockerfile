@@ -21,8 +21,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ./backend
 COPY math_docs math_docs/
 COPY db db/
-COPY start.sh .
-RUN chmod +x start.sh
 
 # Set environment variables
 ENV PYTHONPATH=/app
@@ -31,11 +29,11 @@ ENV PORT=8000
 # Expose the port
 EXPOSE 8000
 
-# Increase healthcheck intervals and timeout
-HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+# Healthcheck configuration
+HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Run the application
-CMD ["./start.sh"]
+# Run the application directly (no need for start.sh)
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 #test
